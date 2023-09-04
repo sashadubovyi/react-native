@@ -75,12 +75,27 @@ export default function LoginScreen({ navigation }) {
           style={[
             s.avatarPhoto,
             {
-              top: keyboardOpen ? (Platform.OS === "ios" ? "2%" : "1%") : "22%",
+              top: keyboardOpen
+                ? Platform.OS === "ios"
+                  ? "25%"
+                  : "18%"
+                : Platform.OS === "ios"
+                ? "28%"
+                : "27%",
             },
           ]}
         />
         <KeyboardAvoidingView
-          style={[s.mainBox, { top: keyboardOpen ? "10%" : "30%" }]}
+          style={[
+            s.mainBox,
+            {
+              top: keyboardOpen
+                ? Platform.OS === "ios"
+                  ? "31%"
+                  : "26%"
+                : "35%",
+            },
+          ]}
           behavior={Platform.OS === "ios" ? "padding" : null}
           keyboardVerticalOffset={Platform.OS === "ios" ? -100 : 0}
         >

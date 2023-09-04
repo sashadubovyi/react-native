@@ -75,12 +75,25 @@ export default function RegistrationScreen({ navigation }) {
           style={[
             s.avatarPhoto,
             {
-              top: keyboardOpen ? (Platform.OS === "ios" ? "2%" : "1%") : "22%",
+              top: keyboardOpen
+                ? Platform.OS === "ios"
+                  ? "17.5%"
+                  : "10%"
+                : "28%",
             },
           ]}
         />
         <KeyboardAvoidingView
-          style={[s.mainBox, { top: keyboardOpen ? "10%" : "30%" }]}
+          style={[
+            s.mainBox,
+            {
+              top: keyboardOpen
+                ? Platform.OS === "ios"
+                  ? "24%"
+                  : "18%"
+                : "35%",
+            },
+          ]}
           behavior={Platform.OS === "ios" ? "padding" : null}
           keyboardVerticalOffset={Platform.OS === "ios" ? -100 : 0}
         >
