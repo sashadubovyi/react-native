@@ -15,6 +15,7 @@ import {
 import { useFonts } from "expo-font";
 import { useForm } from "react-hook-form";
 import { StatusBar } from "expo-status-bar";
+import { Svg, Circle, G, Path } from "react-native-svg";
 
 export default function RegistrationScreen({ navigation }) {
   const [fontsLoaded] = useFonts({
@@ -83,6 +84,43 @@ export default function RegistrationScreen({ navigation }) {
             },
           ]}
         />
+        <Svg
+          style={[
+            s.avatarPhotoSvg,
+            {
+              top: keyboardOpen
+                ? Platform.OS === "ios"
+                  ? "17.5%"
+                  : "10%"
+                : "28%",
+            },
+          ]}
+          width="132"
+          height="120"
+          viewBox="0 0 132 120"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <G id="Add photo">
+            <G id="add">
+              <Circle
+                id="Ellipse 12"
+                cx="119.5"
+                cy="93.5"
+                r="12"
+                fill="white"
+                stroke="#FF6C00"
+              />
+              <Path
+                id="Union"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M120 87H119V93H113V94H119V100H120V94H126V93H120V87Z"
+                fill="#FF6C00"
+              />
+            </G>
+          </G>
+        </Svg>
         <KeyboardAvoidingView
           style={[
             s.mainBox,
@@ -174,7 +212,10 @@ export default function RegistrationScreen({ navigation }) {
 
               <TouchableOpacity
                 style={s.btnSignUp}
-                onPress={handleSubmit(onSubmit)}
+                onPress={() => {
+                  handleSubmit(onSubmit);
+                  navigation.navigate("MapScreen");
+                }}
               >
                 <Text style={s.btnText}>Зареєструватись</Text>
               </TouchableOpacity>
@@ -225,9 +266,18 @@ const s = StyleSheet.create({
   avatarPhoto: {
     position: "absolute",
     zIndex: 10,
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+    top: "28%",
+    left: "35%",
+    backgroundColor: "#F6F6F6",
+  },
+  avatarPhotoSvg: {
+    position: "absolute",
+    zIndex: 10,
     width: 132,
     height: 120,
-    backgroundColor: "#F6F6F6",
     borderRadius: 16,
     top: "28%",
   },
