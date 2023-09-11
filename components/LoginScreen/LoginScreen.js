@@ -77,9 +77,9 @@ export default function LoginScreen({ navigation }) {
             {
               top: keyboardOpen
                 ? Platform.OS === "ios"
-                  ? "31%"
+                  ? "41%"
                   : "26%"
-                : "35%",
+                : "45%",
             },
           ]}
           behavior={Platform.OS === "ios" ? "padding" : null}
@@ -147,7 +147,7 @@ export default function LoginScreen({ navigation }) {
                 style={s.btnSignIn}
                 onPress={() => {
                   handleSubmit(onSubmit);
-                  navigation.navigate("MapScreen");
+                  navigation.navigate("Home");
                 }}
               >
                 <Text style={s.btnText}>Увійти</Text>
@@ -181,7 +181,7 @@ const s = StyleSheet.create({
     borderTopRightRadius: 25,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingTop: 32,
+    paddingTop: 42,
   },
   container: {
     flex: 1,
@@ -195,6 +195,15 @@ const s = StyleSheet.create({
     left: 0,
     width: "100%",
     height: "100%",
+  },
+  avatarPhoto: {
+    position: "absolute",
+    zIndex: 10,
+    width: 132,
+    height: 120,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+    top: "28%",
   },
   scrollViewContent: {
     alignItems: "center",

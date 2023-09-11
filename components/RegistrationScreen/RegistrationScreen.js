@@ -15,7 +15,7 @@ import {
 import { useFonts } from "expo-font";
 import { useForm } from "react-hook-form";
 import { StatusBar } from "expo-status-bar";
-import { Svg, Circle, G, Path } from "react-native-svg";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function RegistrationScreen({ navigation }) {
   const [fontsLoaded] = useFonts({
@@ -72,9 +72,9 @@ export default function RegistrationScreen({ navigation }) {
           source={require("../../assets/bcg-image.jpeg")}
           style={s.backgroundImage}
         />
-        <Image
+        <TouchableOpacity
           style={[
-            s.avatarPhoto,
+            s.avatarBtn,
             {
               top: keyboardOpen
                 ? Platform.OS === "ios"
@@ -83,44 +83,32 @@ export default function RegistrationScreen({ navigation }) {
                 : "28%",
             },
           ]}
-        />
-        <Svg
-          style={[
-            s.avatarPhotoSvg,
-            {
-              top: keyboardOpen
-                ? Platform.OS === "ios"
-                  ? "17.5%"
-                  : "10%"
-                : "28%",
-            },
-          ]}
-          width="132"
-          height="120"
-          viewBox="0 0 132 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
         >
-          <G id="Add photo">
-            <G id="add">
-              <Circle
-                id="Ellipse 12"
-                cx="119.5"
-                cy="93.5"
-                r="12"
-                fill="white"
-                stroke="#FF6C00"
-              />
-              <Path
-                id="Union"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M120 87H119V93H113V94H119V100H120V94H126V93H120V87Z"
-                fill="#FF6C00"
-              />
-            </G>
-          </G>
-        </Svg>
+          <Image
+            style={[
+              s.avatarPhoto,
+              {
+                top: keyboardOpen
+                  ? Platform.OS === "ios"
+                    ? "17.5%"
+                    : "10%"
+                  : "28%",
+              },
+            ]}
+          />
+          <MaterialIcons
+            style={[
+              s.avatarPhotoSvg,
+              {
+                top: keyboardOpen ? (Platform.OS === "ios" ? 80 : "10%") : 80,
+              },
+            ]}
+            name="add-circle-outline"
+            size={25}
+            color="#FF6C00"
+          />
+        </TouchableOpacity>
+
         <KeyboardAvoidingView
           style={[
             s.mainBox,
@@ -263,23 +251,28 @@ const s = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  avatarBtn: {
+    position: "absolute",
+    zIndex: 10,
+    top: "28%",
+    left: Platform.OS === "ios" ? "35%" : "34%",
+  },
   avatarPhoto: {
     position: "absolute",
     zIndex: 10,
     width: 120,
     height: 120,
     borderRadius: 16,
-    top: "28%",
-    left: "35%",
+    // top: "28%",
+    // left: Platform.OS === "ios" ? "35%" : "34%",
     backgroundColor: "#F6F6F6",
   },
   avatarPhotoSvg: {
     position: "absolute",
     zIndex: 10,
-    width: 132,
-    height: 120,
     borderRadius: 16,
-    top: "28%",
+    top: 80,
+    left: 107,
   },
   scrollViewContent: {
     alignItems: "center",
