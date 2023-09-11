@@ -12,6 +12,7 @@ import PostsScreen from "../PostsScreen/PostsScreen";
 import CreatePostsScreen from "../CreatePostsScreen/CreatePostsScreen";
 import ProfileScreen from "../ProfileScreen/ProfileScreen";
 import { Ionicons } from "@expo/vector-icons";
+import MapScreen from "../MapScreen/MapScreen";
 
 const Tabs = createBottomTabNavigator();
 
@@ -55,6 +56,7 @@ export default function Home({ navigation }) {
           ),
         }}
       />
+
       <Tabs.Screen
         name="CreatePostsScreen"
         options={({ navigation }) => ({
@@ -101,6 +103,34 @@ export default function Home({ navigation }) {
             <Feather name={"user"} size={size} color={color} />
           ),
         }}
+      />
+      <Tabs.Screen
+        name="MapScreen"
+        component={MapScreen}
+        options={({ navigation }) => ({
+          tabBarButton: () => null,
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={() => navigation.navigate("CreatePostsScreen")}
+            >
+              <Ionicons name="arrow-back" size={24} color="#212121" />
+            </TouchableOpacity>
+          ),
+          tabBarStyle: {
+            display: "none",
+          },
+          title: "Вибрати місцевість",
+          headerTitleAlign: "center",
+          headerRight: () => (
+            <TouchableOpacity
+              style={{ marginRight: 20 }}
+              onPress={() => navigation.navigate("CreatePostsScreen")}
+            >
+              <MaterialIcons name="done" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+        })}
       />
     </Tabs.Navigator>
   );

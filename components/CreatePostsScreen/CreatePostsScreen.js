@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { useFonts } from "expo-font";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
 
 export default function CreatePostsScreen({ navigation, showCustomTabBar }) {
   const [fontsLoaded] = useFonts({
@@ -20,8 +22,28 @@ export default function CreatePostsScreen({ navigation, showCustomTabBar }) {
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [capturedImage, setCapturedImage] = useState(null);
 
-  const handleInputChange = (showCustomTabBar) => {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  const handleInputChange = () => {
     if (title && location) {
       setIsButtonDisabled(false);
     } else {
@@ -59,16 +81,57 @@ export default function CreatePostsScreen({ navigation, showCustomTabBar }) {
       <View style={s.mainContainer}>
         <View style={s.mainContent}>
           <View>
-            <TouchableOpacity>
-              <Image style={s.uploadImage}></Image>
-              <Image style={s.uploadImageCircule} />
+            <View style={s.uploadImage}>
+              <Camera
+                style={[s.camera, { borderRadius: 8 }]}
+                type={type}
+                ref={setCameraRef}
+              >
+                <View style={s.photoView}>
+                  <TouchableOpacity
+                    style={s.flipContainer}
+                    onPress={() => {
+                      setType(
+                        type === Camera.Constants.Type.back
+                          ? Camera.Constants.Type.front
+                          : Camera.Constants.Type.back
+                      );
+                    }}
+                  ></TouchableOpacity>
+                </View>
+              </Camera>
+            </View>
+            <TouchableOpacity
+              style={s.uploadImageCircule}
+              onPress={async () => {
+                if (cameraRef) {
+                  const { uri } = await cameraRef.takePictureAsync();
+                  await MediaLibrary.createAssetAsync(uri);
+                  setCapturedImage(uri);
+                }
+              }}
+            >
               <FontAwesome
                 style={s.uploadImageSVG}
                 name="camera"
                 size={24}
                 color="#bdbdbd"
               />
-              <Text style={s.uploadPhotoText}>Завантажте фото</Text>
+            </TouchableOpacity>
+
+            {capturedImage && (
+              <Image source={{ uri: capturedImage }} style={s.capturedImage} />
+            )}
+            <TouchableOpacity
+              onPress={() => {
+                if (capturedImage) {
+                  setCapturedImage(null);
+                }
+              }}
+            >
+              <Text style={s.uploadPhotoText}>
+                {capturedImage ? "Видалити фото" : "Завантажте фото"}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -85,7 +148,13 @@ export default function CreatePostsScreen({ navigation, showCustomTabBar }) {
             </View>
 
             <View style={s.inputContainer}>
-              <Feather name="map-pin" size={24} color="#bdbdbd" />
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("MapScreen");
+                }}
+              >
+                <Feather name="map-pin" size={24} color="#bdbdbd" />
+              </TouchableOpacity>
               <TextInput
                 style={s.uploadInput}
                 placeholder="Місцевість..."
@@ -177,6 +246,7 @@ const s = StyleSheet.create({
     backgroundColor: "#f6f6f6",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 40,
   },
   mainContent: {
     flex: 1,
@@ -192,23 +262,22 @@ const s = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#E8E8E8",
-    backgroundColor: "#F6F6F6",
     zIndex: 5,
   },
   uploadImageCircule: {
     position: "absolute",
-    top: "37%",
+    top: "33%",
     left: "40%",
-    backgroundColor: "#fff",
-    borderRadius: "50%",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    borderRadius: 50,
     width: 60,
     height: 60,
     zIndex: 6,
   },
   uploadImageSVG: {
     position: "absolute",
-    top: "44%",
-    left: "45.3%",
+    top: "32%",
+    left: "30%",
     zIndex: 7,
   },
   uploadPhotoText: {
@@ -235,5 +304,54 @@ const s = StyleSheet.create({
   textBtn: {
     color: "#fff",
     fontSize: 16,
+  },
+  container: { flex: 1 },
+  camera: {
+    flex: 1,
+  },
+  photoView: {
+    flex: 1,
+    backgroundColor: "transparent",
+    justifyContent: "flex-end",
+  },
+
+  flipContainer: {
+    flex: 0.1,
+    alignSelf: "flex-end",
+  },
+
+  button: {
+    alignSelf: "center",
+    position: "absolute",
+    zIndex: 50,
+  },
+
+  takePhotoOut: {
+    borderWidth: 2,
+    borderColor: "white",
+    height: 50,
+    width: 50,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 50,
+  },
+
+  takePhotoInner: {
+    borderWidth: 2,
+    borderColor: "white",
+    height: 40,
+    width: 40,
+    backgroundColor: "white",
+    borderRadius: 50,
+  },
+  capturedImage: {
+    position: "absolute",
+    width: 343,
+    height: 240,
+    // borderRadius: 8,
+    // borderWidth: 1,
+    // borderColor: "#E8E8E8",
+    zIndex: 6,
   },
 });
