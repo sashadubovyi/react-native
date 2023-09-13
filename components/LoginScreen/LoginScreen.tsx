@@ -15,13 +15,46 @@ import {
 import { useFonts } from "expo-font";
 import { useForm } from "react-hook-form";
 import { StatusBar } from "expo-status-bar";
-import { MaterialIcons } from "@expo/vector-icons";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { signInWithEmailAndPassword } from "@firebase/auth";
 
-export default function RegistrationScreen({ navigation }) {
+export default function LoginScreen({ navigation }) {
   const [fontsLoaded] = useFonts({
     "Roboto-Bold": require("../../assets/fonts/Roboto/Roboto-Bold.ttf"),
   });
   const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const auth = FIREBASE_AUTH;
+
+  const SignIn = async (email, password) => {
+    setLoading(true);
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      navigation.navigate("Home");
+    } catch (error: any) {
+      console.log(error);
+      alert("Login failed" + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = () => {
+    SignIn(email, password);
+    console.log("login success");
+  };
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
+
+  const [isPassVisible, setPassVisible] = useState(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -44,21 +77,8 @@ export default function RegistrationScreen({ navigation }) {
     };
   }, []);
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
-
-  const [isPassVisible, setPassVisible] = useState(false);
-
   const togglePassVisibility = () => {
     setPassVisible(!isPassVisible);
-  };
-
-  const onSubmit = (data) => {
-    console.log(data);
   };
 
   if (!fontsLoaded) {
@@ -72,76 +92,23 @@ export default function RegistrationScreen({ navigation }) {
           source={require("../../assets/bcg-image.jpeg")}
           style={s.backgroundImage}
         />
-        <TouchableOpacity
-          style={[
-            s.avatarBtn,
-            {
-              top: keyboardOpen
-                ? Platform.OS === "ios"
-                  ? "17.5%"
-                  : "10%"
-                : "28%",
-            },
-          ]}
-        >
-          <Image
-            style={[
-              s.avatarPhoto,
-              {
-                top: keyboardOpen
-                  ? Platform.OS === "ios"
-                    ? "17.5%"
-                    : "10%"
-                  : "28%",
-              },
-            ]}
-          />
-          <MaterialIcons
-            style={[
-              s.avatarPhotoSvg,
-              {
-                top: keyboardOpen ? (Platform.OS === "ios" ? 80 : "10%") : 80,
-              },
-            ]}
-            name="add-circle-outline"
-            size={25}
-            color="#FF6C00"
-          />
-        </TouchableOpacity>
-
         <KeyboardAvoidingView
           style={[
             s.mainBox,
             {
               top: keyboardOpen
                 ? Platform.OS === "ios"
-                  ? "24%"
-                  : "18%"
-                : "35%",
+                  ? "41%"
+                  : "26%"
+                : "45%",
             },
           ]}
-          behavior={Platform.OS === "ios" ? "padding" : null}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
           keyboardVerticalOffset={Platform.OS === "ios" ? -100 : 0}
         >
           <ScrollView contentContainerStyle={s.scrollViewContent}>
-            <Text style={s.mainText}>Реєстрація</Text>
+            <Text style={s.mainText}>Увійти</Text>
             <View style={s.registerContent}>
-              <View>
-                <TextInput
-                  {...register("login", { required: "Login is required" })}
-                  style={[
-                    s.inputSignUp,
-                    errors.login && { borderColor: "#FF6C00" },
-                  ]}
-                  placeholder="Логін"
-                  onChangeText={(text) => {
-                    setValue("login", text);
-                  }}
-                ></TextInput>
-                {errors.login && (
-                  <Text style={s.errorText}>{errors.login.message}</Text>
-                )}
-              </View>
               <View>
                 <TextInput
                   {...register("email", {
@@ -152,17 +119,17 @@ export default function RegistrationScreen({ navigation }) {
                     },
                   })}
                   style={[
-                    s.inputSignUp,
+                    s.inputSignIn,
                     errors.email && { borderColor: "#FF6C00" },
                   ]}
                   placeholder="Адреса електронної пошти"
                   onChangeText={(text) => {
-                    setValue("email", text);
+                    setEmail(text);
                   }}
                 ></TextInput>
-                {errors.email && (
+                {/* {errors.email && (
                   <Text style={s.errorText}>{errors.email.message}</Text>
-                )}
+                )} */}
               </View>
               <View>
                 <View style={s.passwordInputContainer}>
@@ -175,13 +142,13 @@ export default function RegistrationScreen({ navigation }) {
                       },
                     })}
                     style={[
-                      s.inputSignUp,
+                      s.inputSignIn,
                       errors.password && { borderColor: "#FF6C00" },
                     ]}
                     placeholder="Пароль"
                     secureTextEntry={!isPassVisible}
                     onChangeText={(text) => {
-                      setValue("password", text);
+                      setPassword(text);
                     }}
                   />
                   <TouchableOpacity
@@ -193,27 +160,20 @@ export default function RegistrationScreen({ navigation }) {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {errors.password && (
+                {/* {errors.password && (
                   <Text style={s.errorText}>{errors.password.message}</Text>
-                )}
+                )} */}
               </View>
-
-              <TouchableOpacity
-                style={s.btnSignUp}
-                onPress={() => {
-                  handleSubmit(onSubmit);
-                  navigation.navigate("MapScreen");
-                }}
-              >
-                <Text style={s.btnText}>Зареєструватись</Text>
+              <TouchableOpacity style={s.btnSignIn} onPress={onSubmit}>
+                <Text style={s.btnText}>Увійти</Text>
               </TouchableOpacity>
             </View>
 
             <Text
               style={s.linkText}
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => navigation.navigate("Registration")}
             >
-              Вже є акаунт? Увійти
+              Немає акаунту? Зареєструватися
             </Text>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -236,7 +196,7 @@ const s = StyleSheet.create({
     borderTopRightRadius: 25,
     paddingLeft: 16,
     paddingRight: 16,
-    paddingTop: 92,
+    paddingTop: 42,
   },
   container: {
     flex: 1,
@@ -251,28 +211,14 @@ const s = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  avatarBtn: {
-    position: "absolute",
-    zIndex: 10,
-    top: "28%",
-    left: Platform.OS === "ios" ? "35%" : "34%",
-  },
   avatarPhoto: {
     position: "absolute",
     zIndex: 10,
-    width: 120,
+    width: 132,
     height: 120,
-    borderRadius: 16,
-    // top: "28%",
-    // left: Platform.OS === "ios" ? "35%" : "34%",
     backgroundColor: "#F6F6F6",
-  },
-  avatarPhotoSvg: {
-    position: "absolute",
-    zIndex: 10,
     borderRadius: 16,
-    top: 80,
-    left: 107,
+    top: "28%",
   },
   scrollViewContent: {
     alignItems: "center",
@@ -291,14 +237,13 @@ const s = StyleSheet.create({
     letterSpacing: 0.3,
     marginBottom: 17,
   },
-  inputSignUp: {
+  inputSignIn: {
     width: 343,
     height: 50,
     backgroundColor: "#F6F6F6",
     borderColor: "#E8E8E8",
     borderRadius: 8,
     paddingLeft: 16,
-    borderColor: "#E8E8E8",
     borderWidth: 1,
   },
   passwordInputContainer: {
@@ -319,7 +264,7 @@ const s = StyleSheet.create({
     fontSize: 16,
     fontStyle: "normal",
   },
-  btnSignUp: {
+  btnSignIn: {
     width: 343,
     paddingTop: 16,
     paddingBottom: 16,

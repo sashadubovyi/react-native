@@ -7,16 +7,20 @@ import {
   SimpleLineIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-
 import PostsScreen from "../PostsScreen/PostsScreen";
 import CreatePostsScreen from "../CreatePostsScreen/CreatePostsScreen";
 import ProfileScreen from "../ProfileScreen/ProfileScreen";
 import { Ionicons } from "@expo/vector-icons";
 import MapScreen from "../MapScreen/MapScreen";
+import { NavigationProp } from "@react-navigation/native";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
 const Tabs = createBottomTabNavigator();
+interface RouterProops {
+  navigation: NavigationProp<any, any>;
+}
 
-export default function Home({ navigation }) {
+export default function Home({ navigation }: RouterProops) {
   const [showCustomTabBar, setShowCustomTabBar] = useState(false);
 
   return (
@@ -35,7 +39,7 @@ export default function Home({ navigation }) {
           marginTop: 5,
         },
       })}
-      initialRouteName="MapScreen"
+      initialRouteName="PostsScreen"
     >
       <Tabs.Screen
         name="PostsScreen"
@@ -45,7 +49,7 @@ export default function Home({ navigation }) {
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 20 }}
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => FIREBASE_AUTH.signOut()}
             >
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />
             </TouchableOpacity>
@@ -104,6 +108,7 @@ export default function Home({ navigation }) {
           ),
         }}
       />
+
       <Tabs.Screen
         name="MapScreen"
         component={MapScreen}

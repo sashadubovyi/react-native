@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -9,11 +9,23 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useFonts } from "expo-font";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
 export default function PostsScreen({ navigation }) {
   const [fontsLoaded] = useFonts({
     "Roboto-Bold": require("../../assets/fonts/Roboto/Roboto-Bold.ttf"),
   });
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const user = FIREBASE_AUTH.currentUser;
+    if (user) {
+      setUserEmail(user.email || "");
+      setUserName(user.displayName || "");
+    }
+  }, []);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={s.mainContainer}>
@@ -24,10 +36,10 @@ export default function PostsScreen({ navigation }) {
               navigation.navigate("Profile");
             }}
           >
-            <Image style={s.userImage}></Image>
+            <View style={s.userImage}></View>
             <View>
-              <Text style={s.userName}>Oleksandr Dubovyi</Text>
-              <Text style={s.userEmail}>sashadubovyi@gmail.com</Text>
+              <Text style={s.userName}>{userName}</Text>
+              <Text style={s.userEmail}>{userEmail}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -68,6 +80,6 @@ const s = StyleSheet.create({
   userEmail: {
     color: "rgba(33, 33, 33, 0.80)",
     fontSize: 11,
-    fontWeight: Platform.OS === "ios" ? "400" : "400",
+    // fontWeight: Platform.OS === "ios" ? "400" : "400",
   },
 });

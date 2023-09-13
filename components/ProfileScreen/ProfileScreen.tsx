@@ -15,8 +15,17 @@ import {
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons, Feather, AntDesign } from "@expo/vector-icons";
+import { NavigationProp } from "@react-navigation/native";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-export default function ProfileScreen({ navigation }) {
+const Tabs = createBottomTabNavigator();
+
+interface RouterProops {
+  navigation: NavigationProp<any, any>;
+}
+
+export default function ProfileScreen({ navigation }: RouterProops) {
   const [likes, setLikes] = useState(200);
   const [isLiked, setIsLiked] = useState(false);
 
@@ -25,18 +34,18 @@ export default function ProfileScreen({ navigation }) {
   });
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
-    }
-    setIsLiked(!isLiked);
-  };
+  // const handleLike = () => {
+  //   if (isLiked) {
+  //     setLikes(likes - 1);
+  //   } else {
+  //     setLikes(likes + 1);
+  //   }
+  //   setIsLiked(!isLiked);
+  // };
 
-  const handlePress = () => {
-    setIsPressed(!isPressed);
-  };
+  // const handlePress = () => {
+  //   setIsPressed(!isPressed);
+  // };
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -68,10 +77,16 @@ export default function ProfileScreen({ navigation }) {
       <View style={s.container}>
         <Image
           source={require("../../assets/bcg-image.jpeg")}
-          style={s.backgroundImage}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+          }}
         />
         <TouchableOpacity style={s.avatarBtn}>
-          <Image style={s.avatarPhoto} />
+          <View style={s.avatarPhoto} />
           <MaterialIcons
             style={s.avatarPhotoSvg}
             name="add-circle-outline"
@@ -82,16 +97,17 @@ export default function ProfileScreen({ navigation }) {
 
         <TouchableOpacity
           style={s.logOutBtn}
-          onPress={() => navigation.navigate("Registration")}
+          // onPress={() => navigation.navigate("Registration")}
+          onPress={() => FIREBASE_AUTH.signOut()}
         >
           <MaterialIcons name="logout" size={24} color="#BDBDBD" />
         </TouchableOpacity>
 
         <KeyboardAvoidingView style={s.mainBox}>
-          <ScrollView contentContainerStyle={s.scrollViewContent}>
+          <ScrollView>
             <View style={s.postsContainer}>
               <View style={s.userPost}>
-                <Image style={s.postImage} />
+                <View style={s.postImage} />
                 <Text style={s.postTitle}>Post Title</Text>
                 <View style={s.postFooter}>
                   <View style={s.postCounts}>
@@ -105,7 +121,7 @@ export default function ProfileScreen({ navigation }) {
                       <Text style={s.commentsCount}>3</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={s.postLikes} onPress={handleLike}>
+                    <TouchableOpacity style={s.postLikes}>
                       {isLiked ? (
                         <AntDesign name="like1" size={24} color="#FF6C00" />
                       ) : (
@@ -188,7 +204,8 @@ const s = StyleSheet.create({
     height: 120,
     borderRadius: 16,
     top: "21%",
-    right: "-16x%",
+    // right: "-16x%",
+    left: 365,
   },
   postsContainer: {
     alignItems: "center",
